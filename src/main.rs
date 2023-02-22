@@ -1,19 +1,33 @@
 use proconio::input;
+use std::num::ParseIntError;
 
 struct NamedVector {
   name:String,
   vector:Vec<i32>,
 }
 
-fn SumVector(vector1:Vec<i32>, vector2:Vec<i32>) -> Vec<i32>{
+fn SumVector(vector1:&Vec<i32>, vector2:&Vec<i32>) -> Vec<i32>{
   if vector1.len() != vector2.len() { 
-    return vector1; 
+    return vec![0; 8];
   }
-  let vec_sum: Vec<i32>;
+  let mut vec_sum: Vec<i32> = vec![0; vector1.len()];
   for i in 0..vector1.len(){
     vec_sum[i] = vector1[i] + vector2[i];
   }
   return vec_sum;
+}
+
+fn TruncateVectorElement(vector:&Vec<i32>, min:i32, max:i32) -> Vec<i32>{
+  let mut vec_trimed: Vec<i32> = Vec::new();
+  for i in 0..vector.len(){
+    let element = vector[i];
+    vec_trimed.push(
+      if      element < min {min}
+      else if element > max {max}
+      else                  {element}
+    )
+  }
+  return vec_trimed;
 }
 
 fn main() {
@@ -37,12 +51,20 @@ fn main() {
     unit_name: String,
   }
 
+  const kNumStatus: usize = 8;
+
   for i1 in 0..kNumFragment-3{
     for i2 in i1+1..kNumFragment-2{
       for i3 in i2+1..kNumFragment-1{
         for i4 in i3+1..kNumFragment-0{
-          let growth_rate_vec: Vec<i32>;
+          let mut growth_vec_sum: Vec<i32> = vec![0; kNumStatus];
+          growth_vec_sum = SumVector(&growth_vec_sum, &star_fragments[i1].vector);
+          growth_vec_sum = SumVector(&growth_vec_sum, &star_fragments[i2].vector);
+          growth_vec_sum = SumVector(&growth_vec_sum, &star_fragments[i3].vector);
+          growth_vec_sum = SumVector(&growth_vec_sum, &star_fragments[i4].vector);
           
+          let growth_vec_sum_trimed = TruncateVectorElement(&growth_vec_sum, 0, 100);
+          println!("{:?}", growth_vec_sum_trimed);
         }
       }
     }

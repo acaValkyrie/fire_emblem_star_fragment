@@ -47,21 +47,31 @@ fn SumVector(vec: &Vec<i32>) -> i32{
   sum
 }
 
+fn FindLowestElement(vec: &Vec<i32>) -> i32{
+  let mut lowest: i32 = vec[0];
+  for i in 1..vec.len() {
+    if vec[i] < lowest {
+      lowest = vec[i];
+    }
+  }
+  lowest
+}
+
 fn main() {
   const kNumFragment: usize = 11;
   let star_fragments: [NamedVector; kNumFragment] = [
     //                  名称                                     力,  守備,  技, 速さ,幸運,魔防,  HP, 武器
-    NamedVector { name: "Aquarius".to_string()   , vector: vec![ 10,    0,  10,  10,   0,   0,   0,  10] },
-    NamedVector { name: "Pisces".to_string()     , vector: vec![  0,   10,   0,   0,  10,  10,  10,   0] },
-    NamedVector { name: "Aries".to_string()      , vector: vec![  0,    0,   0,   0,  40,   0,   0,   0] },
-    NamedVector { name: "Taurus".to_string()     , vector: vec![  5,    5,   5,   5,   5,   5,   5,   5] },
-    NamedVector { name: "Gemini".to_string()     , vector: vec![ 30,   20,   0,   0,   0,   0,   0, -10] },
-    NamedVector { name: "Cancer".to_string()     , vector: vec![-10,   50,   0,   0,   0,   0,   0,   0] },
-    NamedVector { name: "Leo".to_string()        , vector: vec![ 50,  -10,   0,   0,   0,   0,   0,   0] },
-    NamedVector { name: "Virgo".to_string()      , vector: vec![  0,  -10,   0,   0,   0,  30,   0,  20] },
-    NamedVector { name: "Libra".to_string()      , vector: vec![  0,    0,   0,  40,  10, -10, -10,  10] },
-    NamedVector { name: "Scorpio".to_string()    , vector: vec![ 20,    0,  20,  10, -10,   0,   0,   0] },
-    NamedVector { name: "Sagittarius".to_string(), vector: vec![  0,    0,  40,  10,   0,   0, -10,   0] },];
+    NamedVector { name: "アクエリア".to_string(), vector: vec![ 10,    0,  10,  10,   0,   0,   0,  10] },
+    NamedVector { name: "ピスケス".to_string()  , vector: vec![  0,   10,   0,   0,  10,  10,  10,   0] },
+    NamedVector { name: "アリエス".to_string()  , vector: vec![  0,    0,   0,   0,  40,   0,   0,   0] },
+    NamedVector { name: "タウルス".to_string()  , vector: vec![  5,    5,   5,   5,   5,   5,   5,   5] },
+    NamedVector { name: "ジェミニ".to_string()  , vector: vec![ 30,   20,   0,   0,   0,   0,   0, -10] },
+    NamedVector { name: "キャンサー".to_string(), vector: vec![-10,   50,   0,   0,   0,   0,   0,   0] },
+    NamedVector { name: "レオ".to_string()      , vector: vec![ 50,  -10,   0,   0,   0,   0,   0,   0] },
+    NamedVector { name: "バルゴ".to_string()    , vector: vec![  0,  -10,   0,   0,   0,  30,   0,  20] },
+    NamedVector { name: "リブラ".to_string()    , vector: vec![  0,    0,   0,  40,  10, -10, -10,  10] },
+    NamedVector { name: "スコーピオ".to_string(), vector: vec![ 20,    0,  20,  10, -10,   0,   0,   0] },
+    NamedVector { name: "サジタリス".to_string(), vector: vec![  0,    0,  40,  10,   0,   0, -10,   0] },];
 
   const kNumUnit: usize = 45;
   let units: [NamedVector; kNumUnit] = [
@@ -116,9 +126,14 @@ fn main() {
   }
 
   let basic_growth: Vec<i32> = FindUnitVector(unit_name, &units);
+  
   let mut max_growth = 0;
-  let mut fragment_num: [usize; 4] = [0; 4];
+  let mut max_growth_fragment_num: [usize; 4] = [0; 4];
   let mut max_growth_vector: Vec<i32> = Vec::new();
+
+  let mut max_rised = 0;
+  let mut max_rised_fragment_num: [usize; 4] = [0; 4];
+  let mut max_rised_vector: Vec<i32> = Vec::new();
 
   for i1 in 0..kNumFragment-3{
     for i2 in i1+1..kNumFragment-2{
@@ -134,15 +149,31 @@ fn main() {
           let growth_sum = SumVector(&growth_vec_sum_trimed);
           if growth_sum > max_growth {
             max_growth = growth_sum;
-            fragment_num = [i1, i2, i3, i4];
-            max_growth_vector = growth_vec_sum_trimed;
+            max_growth_fragment_num = [i1, i2, i3, i4];
+            max_growth_vector = growth_vec_sum_trimed.clone();
           }
+
+          let lowest_growth = FindLowestElement(&growth_vec_sum_trimed);
+          if lowest_growth > max_rised {
+            max_rised = lowest_growth;
+            max_rised_fragment_num = [i1, i2, i3, i4];
+            max_rised_vector = growth_vec_sum_trimed.clone();
+          }
+
         }
       }
     }
   }
+
+  println!("合計値最大");
   for i in 0..4{
-    println!("{}", star_fragments[ fragment_num[i] ].name);
+    println!("{}", star_fragments[ max_growth_fragment_num[i] ].name);
   }
   println!("{:?}", max_growth_vector);
+
+  println!("最低値最大");
+  for i in 0..4{
+    println!("{}", star_fragments[ max_rised_fragment_num[i] ].name);
+  }
+  println!("{:?}", max_rised_vector);
 }
